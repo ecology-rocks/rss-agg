@@ -1,4 +1,6 @@
-exports.handler = async function (event, context) {
+import fetch from 'node-fetch'; // Standard in Node 18+, but explicit import is safer in modules
+
+export const handler = async function (event, context) {
   const { url } = event.queryStringParameters;
 
   if (!url) {
@@ -16,7 +18,7 @@ exports.handler = async function (event, context) {
       statusCode: 200,
       headers: {
         "Content-Type": "application/xml",
-        "Access-Control-Allow-Origin": "*", // Allow your Vue app to access this
+        "Access-Control-Allow-Origin": "*",
       },
       body: data,
     };
