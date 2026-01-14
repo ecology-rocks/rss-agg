@@ -11,13 +11,15 @@ defineEmits([
 
 <template>
   <div class="sidebar-container">
-    <SidebarSources 
-      :feeds="feeds"
-      :hidden-feeds="hiddenFeeds"
-      @add-feed="$emit('add-feed', $event)"
-      @remove-feed="$emit('remove-feed', $event)"
-      @toggle-feed="$emit('toggle-feed', $event)"
-    />
+<SidebarSources 
+  :feeds="feeds"
+  :hidden-feeds="hiddenFeeds"
+  @add-feed="$emit('add-feed', $event)"
+  @remove-feed="$emit('remove-feed', $event)"
+  @toggle-feed="$emit('toggle-feed', $event)"
+  @import-opml="$emit('import-opml', $event)"  
+  @export-opml="$emit('export-opml')"
+/>
 
     <button class="refresh-btn" @click="$emit('refresh')" :disabled="loading">
       {{ loading ? 'Updating...' : 'Refresh All' }}

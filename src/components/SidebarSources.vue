@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 defineProps(['feeds', 'hiddenFeeds']);
-const emit = defineEmits(['add-feed', 'remove-feed', 'toggle-feed']);
+const emit = defineEmits(['add-feed', 'remove-feed', 'toggle-feed', 'import-opml', 'export-opml']);
+
 const newUrl = ref('');
+const fileInput = ref(null); 
 
 const submit = () => {
   if(newUrl.value) {
@@ -10,6 +12,18 @@ const submit = () => {
     newUrl.value = '';
   }
 }
+
+const triggerImport = () => {
+  fileInput.value.click();
+};
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    emit('import-opml', file);
+  }
+  event.target.value = '';
+};
 </script>
 
 <template>
@@ -18,6 +32,24 @@ const submit = () => {
     <div class="input-group">
       <input v-model="newUrl" placeholder="RSS URL" @keyup.enter="submit" />
       <button class="add-btn" @click="submit">+</button>
+    </div>
+
+    <div class="opml-actions">
+      <input 
+        type="file" 
+        ref="fileInput" 
+        accept=".opml,.xml" 
+        style="display: none" 
+        @change="handleFileChange" 
+      />
+      
+      <button class="opml-btn" @click="triggerImport">
+        <span class="icon">📥</span> Import
+      </button>
+      
+      <button class="opml-btn" @click="$emit('export-opml')">
+        <span class="icon">📤</span> Export
+      </button>
     </div>
     
     <ul class="feed-list">
@@ -36,10 +68,48 @@ const submit = () => {
 </template>
 
 <style scoped>
-/* Copy input-group, feed-list, feed-item, etc. styles from old Sidebar here */
-.input-group { display: flex; gap: 5px; margin-bottom: 10px; }
+/* Existing Styles */
+.input-group { display: flex; gap: 5px; margin-bottom: 5px; }
 .input-group input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
 .add-btn { padding: 5px 10px; cursor: pointer; }
+
+/* NEW Styles for OPML Buttons */
+.opml-actions {
+  display: flex;
+  gap: 8px; /* Space between buttons */
+  margin-bottom: 15px;
+}
+
+.opml-btn {
+  flex: 1; /* Each button takes 50% width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.opml-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #bbb;
+  color: #333;
+}
+
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* List Styles */
 .feed-list { padding: 0; margin: 0; list-style: none; }
 .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
 .feed-item.muted { opacity: 0.5; }

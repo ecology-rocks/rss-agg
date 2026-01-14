@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { db } from '../firebase';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { parseXML, autoCategorize } from '../utils/feedProcessor'; // Import logic
+import { parseOPML, downloadOPML } from '../utils/opml';
 
 const feedItems = ref([]);
 const userFeeds = ref([]);
@@ -89,9 +90,42 @@ export function useFeeds(user) {
     feedItems.value = autoCategorize(feedItems.value, categories.value);
   };
 
+const importOPML = async (file) => {
+    if (!user.value || !file) return;
+    
+    try {
+      loading.value = true;
+      const text = await file.text();
+      const newUrls = parseOPML(text);
+      
+      if (newUrls.length === 0) throw new Error("No feeds found in OPML");
+
+      // Bulk update Firestore
+      // arrayUnion(...newUrls) adds only unique values
+      await updateDoc(doc(db, "users", user.value.uid), {
+        feeds: arrayUnion(...newUrls)
+      });
+
+      // Update local state and refresh
+      userFeeds.value = [...new Set([...userFeeds.value, ...newUrls])];
+      await refreshAllFeeds();
+    } catch (e) {
+      console.error("OPML Import Failed", e);
+      alert("Failed to import OPML file.");
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const exportOPML = () => {
+    if (userFeeds.value.length === 0) return;
+    downloadOPML(userFeeds.value);
+  };
+
   return {
     feedItems, userFeeds, categories, loading,
     loadUserPreferences, addFeed, removeFeed,
-    addCategory, editCategory, removeCategory, refreshAllFeeds
+    addCategory, editCategory, removeCategory, refreshAllFeeds,
+    importOPML, exportOPML,
   };
 }

@@ -20,7 +20,9 @@ const {
   addCategory,
   editCategory,
   removeCategory,
-  refreshAllFeeds 
+  refreshAllFeeds,
+  importOPML,
+  exportOPML 
 } = useFeeds(user);
 
 const router = useRouter();
@@ -93,19 +95,21 @@ watch(user, (newUser) => {
     </header>
 
     <main>
-      <Sidebar 
-        :feeds="userFeeds" 
-        :categories="categories"
-        :hidden-feeds="hiddenFeeds"
-        :loading="loading" 
-        @add-feed="addFeed"
-        @remove-feed="removeFeed"
-        @add-category="addCategory"
-        @edit-category="editCategory" 
-        @remove-category="removeCategory"
-        @toggle-feed="toggleFeed"
-        @refresh="refreshAllFeeds"
-      />
+<Sidebar 
+  :feeds="userFeeds" 
+  :categories="categories"
+  :hidden-feeds="hiddenFeeds"
+  :loading="loading" 
+  @add-feed="addFeed"
+  @remove-feed="removeFeed"
+  @add-category="addCategory"
+  @edit-category="editCategory" 
+  @remove-category="removeCategory"
+  @toggle-feed="toggleFeed"
+  @refresh="refreshAllFeeds"
+  @import-opml="importOPML" 
+  @export-opml="exportOPML"
+/>
 
       <div class="content">
         <div class="tabs">
