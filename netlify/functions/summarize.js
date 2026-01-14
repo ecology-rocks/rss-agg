@@ -16,7 +16,8 @@ exports.handler = async function (event, context) {
 
     // Initialize Gemini
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+// Use the concrete version number
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     // The Prompt
     const prompt = `
