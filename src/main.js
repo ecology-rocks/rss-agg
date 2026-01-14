@@ -1,5 +1,16 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import './style.css'; // Optional global styles
 
-createApp(App).mount('#app')
+// Wait for Firebase to init before mounting to prevent redirect flickers
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+
+let app;
+
+onAuthStateChanged(auth, () => {
+  if (!app) {
+    app = createApp(App).use(router).mount('#app');
+  }
+});
